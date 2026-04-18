@@ -14,7 +14,15 @@ struct link
     link *nextVirus; // next
     virus *vir;      // data
 };
-
+struct fun_desc menu[] = {
+    {"<L>oad signatures", 'L', readVirus},
+    {"<P>rint signatures", 'P', dprt},
+    {"<S>elect file to inspect", 'S', cxprt},
+    {"<D>etect viruses", 'D', encrypt},
+    {"<F>ix file", 'F', decrypt},
+    {"<Q>uit", 'Q', decrypt},
+    {NULL, 0, NULL} // end
+};
 static int BigEndian = 0;
 
 virus *readVirus(FILE *file)
@@ -168,4 +176,12 @@ int main(int argc, char const *argv[])
     else
         printf("No file has provided\n");
     return 0;
+    while (1)
+    {
+        printf("Select operation from the following menu:\n");
+        for (int i = 0; menu[i].name != NULL; i++) // print menu options
+        {
+            printf("%c) %s\n", menu[i].index, menu[i].name);
+        }
+    }
 }
