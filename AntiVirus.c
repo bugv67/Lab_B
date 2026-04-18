@@ -22,7 +22,7 @@ struct fun_desc
 };
 struct fun_desc menu[] = {
     {"<L>oad signatures", 'L', loadSignatures},
-    {"<P>rint signatures", 'P', printVirus},
+    {"<P>rint signatures", 'P', printVirusList},
     {"<S>elect file to inspect", 'S', selectFile},
     {"<D>etect viruses", 'D', detectViruses},
     {"<F>ix file", 'F', fixFile},
@@ -136,17 +136,21 @@ void list_free(link *virus_list)
     }
 }
 
-void selectFile(void){
+void selectFile(void)
+{
     char inputBuffer[256];
     printf("Enter file name: ");
-    if (fgets(inputBuffer, sizeof(inputBuffer), stdin) != NULL){
-        sscanf(inputBuffer, "%s", suspiciousFile); 
-    } else {
+    if (fgets(inputBuffer, sizeof(inputBuffer), stdin) != NULL)
+    {
+        sscanf(inputBuffer, "%s", suspiciousFile);
+    }
+    else
+    {
         fprintf(stderr, "Error reading input\n");
     }
 }
 
-int main(int argc, char const *argv[])
+void loadSignatures()
 {
     char fileName[256];
     printf("Please enter signture file \n");
@@ -214,6 +218,17 @@ void Quit(virus *v, FILE *file)
     exit(0); // exit the program??????????
 }
 
+void printVirusList()
+{
+    if (virus_list == NULL)
+    {
+        printf("No viruses loaded.\n");
+    }
+    else
+    {
+        list_print(virus_list, stdout);
+    }
+}
 void detectViruses()
 {
     printf("Not implemented yet\n");
