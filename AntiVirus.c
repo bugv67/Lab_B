@@ -23,13 +23,14 @@ struct fun_desc
 struct fun_desc menu[] = {
     {"<L>oad signatures", 'L', readVirus},
     {"<P>rint signatures", 'P', printVirus},
-    {"<S>elect file to inspect", 'S', cxprt},
+    {"<S>elect file to inspect", 'S', selectFile},
     {"<D>etect viruses", 'D', encrypt},
     {"<F>ix file", 'F', decrypt},
     {"<Q>uit", 'Q', decrypt},
     {NULL, 0, NULL} // end
 };
 static int BigEndian = 0;
+static char suspiciousFile[256] = "";
 
 virus *readVirus(FILE *file)
 // Input: file pointer and returns a virus* that represents the next virus in the file.
@@ -128,6 +129,16 @@ void list_free(link *virus_list)
         free(current->vir); // free the virus struct
         free(current);      // free the link
         current = next;
+    }
+}
+
+void selectFile(void){
+    char inputBuffer[256];
+    printf("Enter file name: ");
+    if (fgets(inputBuffer, sizeof(inputBuffer), stdin) != NULL){
+        sscanf(inputBuffer, "%s", suspiciousFile); 
+    } else {
+        fprintf(stderr, "Error reading input\n");
     }
 }
 
