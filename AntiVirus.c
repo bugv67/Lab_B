@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 typedef struct virus
 {
@@ -224,10 +225,62 @@ void printVirusList()
         list_print(virus_list, stdout);
     }
 }
+
+void detect_virus(char *buffer, unsigned int size, link *virus_list)
+{
+    link *current = virus_list;
+    int minSize = 0;
+    while (current != NULL)
+    {
+        virus *v = current->vir;
+        minSize = size;
+        if (v->SigSize < minSize)
+        {
+            minSize = v->SigSize;
+        }
+        if (minSize >= v->SigSize) // means can read
+        {
+            // scan the file for the signature
+            for (unsigned int i = 0; i <= size - v->SigSize; i++)
+            {
+                if (memcmp(buffer + i, v->Sig, v->SigSize) == 0)
+                {
+                    printf("Virus found: %s\n", v->VirusName);
+                    printf("Starting byte location: %u\n", i);
+                    printf("Virus signature size: %d\n", v->SigSize);
+                    printf("\n");
+                }
+            }
+        }
+        current = current->nextVirus;
+    }
+}
+
 void detectViruses()
 {
-    printf("Not implemented yet\n");
+    if (suspiciousFile[0] == '\0')
+    {
+        printf("No file selected. Please select a file first.\n");
+        return;
+    }
+    FILE *file = fopen(suspiciousFile, "rb");
+    if (file == NULL)
+    {
+        printf("Error opening file\n");
+        return;
+    }
+    char buffer[10000];
+    size_t bytesRead = fread(buffer, 1, sizeof(buffer), file);
+    if (bytesRead == 0)
+    {
+        fprintf(stderr, "Nothing to read \n");
+        fclose(file);
+        return;
+    }
+    detect_virus(buffer, (unsigned int)bytesRead, virus_list);
+    fclose(file);
 }
+
 struct fun_desc menu[] = {
     {"<L>oad signatures", 'L', loadSignatures},
     {"<P>rint signatures", 'P', printVirusList},
