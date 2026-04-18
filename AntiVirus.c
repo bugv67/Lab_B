@@ -197,8 +197,69 @@ void loadSignatures()
         printf("No file has provided\n");
 }
 
+void neutralize_virus(char *fileName, int signatureOffset)
+{
+    FILE *file = fopen(fileName, "r+b"); // ?
+    if (file == NULL)
+    {
+        printf("Error opening file\n");
+        return;
+    }
+    fseek(file, signatureOffset, SEEK_SET); // seek set- from the beginning
+    unsigned char ret = 0xC3;
+    fwrite(&ret, sizeof(unsigned char), 1, file);
+
+    fclose(file);
+}
+
 void fixFile()
 {
+    // scan for viruse
+    if (suspiciousFile[0] == '\0')
+    {
+        printf("No file selected. Please select a file first.\n");
+        return;
+    }
+    FILE *file = fopen(suspiciousFile, "rb");
+    if (file == NULL)
+    {
+        printf("Error opening file\n");
+        return;
+    }
+    char buffer[10000];
+    size_t bytesRead = fread(buffer, 1, sizeof(buffer), file);
+    fclose(file);
+    if (bytesRead == 0)
+    {
+        fprintf(stderr, "Nothing to read \n");
+
+        return;
+    }
+    int size = (unsigned int)bytesRead;
+    link *current = virus_list;
+    int minSize = 0;
+    while (current != NULL)
+    {
+        virus *v = current->vir;
+        minSize = size;
+        if (v->SigSize < minSize)
+        {
+            minSize = v->SigSize;
+        }
+        if (minSize >= v->SigSize) // means can read
+        {
+            // scan the file for the signature
+            for (unsigned int i = 0; i <= size - v->SigSize; i++)
+            {
+                if (memcmp(buffer + i, v->Sig, v->SigSize) == 0)
+                {
+                    neutralize_virus(suspiciousFile, i);
+                }
+            }
+        }
+        current = current->nextVirus;
+    }
+
     printf("Not implemented yet\n");
 }
 
