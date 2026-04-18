@@ -20,15 +20,7 @@ struct fun_desc
     char index;
     void (*fun)(void);
 };
-struct fun_desc menu[] = {
-    {"<L>oad signatures", 'L', loadSignatures},
-    {"<P>rint signatures", 'P', printVirusList},
-    {"<S>elect file to inspect", 'S', selectFile},
-    {"<D>etect viruses", 'D', detectViruses},
-    {"<F>ix file", 'F', fixFile},
-    {"<Q>uit", 'Q', Quit},
-    {NULL, 0, NULL} // end
-};
+
 static int BigEndian = 0;
 static char suspiciousFile[256] = "";
 
@@ -218,7 +210,7 @@ void Quit()
         list_free(virus_list);
         virus_list = NULL;
     }
-    exit(0); // exit the program??????????
+    exit(0); // exit the progra
 }
 
 void printVirusList()
@@ -236,6 +228,15 @@ void detectViruses()
 {
     printf("Not implemented yet\n");
 }
+struct fun_desc menu[] = {
+    {"<L>oad signatures", 'L', loadSignatures},
+    {"<P>rint signatures", 'P', printVirusList},
+    {"<S>elect file to inspect", 'S', selectFile},
+    {"<D>etect viruses", 'D', detectViruses},
+    {"<F>ix file", 'F', fixFile},
+    {"<Q>uit", 'Q', Quit},
+    {NULL, 0, NULL} // end
+};
 int main(int argc, char const *argv[])
 {
 
