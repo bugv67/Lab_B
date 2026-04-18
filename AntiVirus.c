@@ -23,13 +23,14 @@ struct fun_desc
 struct fun_desc menu[] = {
     {"<L>oad signatures", 'L', loadSignatures},
     {"<P>rint signatures", 'P', printVirus},
-    {"<S>elect file to inspect", 'S', cxprt},
+    {"<S>elect file to inspect", 'S', selectFile},
     {"<D>etect viruses", 'D', detectViruses},
     {"<F>ix file", 'F', fixFile},
     {"<Q>uit", 'Q', Quit},
     {NULL, 0, NULL} // end
 };
 static int BigEndian = 0;
+static char suspiciousFile[256] = "";
 
 static link *virus_list = NULL;
 
@@ -135,7 +136,17 @@ void list_free(link *virus_list)
     }
 }
 
-void loadSignatures()
+void selectFile(void){
+    char inputBuffer[256];
+    printf("Enter file name: ");
+    if (fgets(inputBuffer, sizeof(inputBuffer), stdin) != NULL){
+        sscanf(inputBuffer, "%s", suspiciousFile); 
+    } else {
+        fprintf(stderr, "Error reading input\n");
+    }
+}
+
+int main(int argc, char const *argv[])
 {
     char fileName[256];
     printf("Please enter signture file \n");
