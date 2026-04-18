@@ -8,11 +8,14 @@ typedef struct virus
     unsigned char *VirusName;
     unsigned char *Sig;
 } virus;
-typedef struct link
+typedef struct link link;
+struct link
 {
     link *nextVirus; // next
     virus *vir;      // data
-} link;
+};
+
+static int BigEndian = 0;
 
 virus *readVirus(FILE *file)
 // Input: file pointer and returns a virus* that represents the next virus in the file.
@@ -30,6 +33,14 @@ virus *readVirus(FILE *file)
         free(v);
         return NULL;
     }
+    else
+    {
+        if (BigEndian) // virl = little , virb = big
+        {
+            v->SigSize = (v->SigSize >> 8) | (v->SigSize << 8); // swap bytes
+        }
+    }
+
     // read the virus name, 16 bytes
     v->VirusName = malloc(16);
     // rad the virus signature, SigSize N bytes
@@ -80,7 +91,7 @@ void list_print(link *virus_list, FILE *)
 link *list_append(link *virus_list, virus *data)
 /* Add a new link with the given data to the list (at the end CAN ALSO AT BEGINNING)
 //return a pointer to the list (i.e., the first link in the list). If the list is null - create a new entry and return a pointer to the entry. */
-{
+{ // add to the start of the list
     link *newLink = malloc(sizeof(link));
     if (newLink == NULL)
     {
@@ -133,6 +144,14 @@ int main(int argc, char const *argv[])
             }
             else
             {
+                if (memcmp(magic, "VIRB", 4) == 0)
+                {
+                    BigEndian = 1;
+                }
+                else
+                {
+                    BigEndian = 0;
+                }
                 virus *v = readVirus(file);
                 while (v != NULL)
                 {
