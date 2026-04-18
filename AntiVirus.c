@@ -18,18 +18,20 @@ struct fun_desc
 {
     char *name;
     char index;
-    char (*fun)(char);
+    void (*fun)(void);
 };
 struct fun_desc menu[] = {
-    {"<L>oad signatures", 'L', readVirus},
+    {"<L>oad signatures", 'L', loadSignatures},
     {"<P>rint signatures", 'P', printVirus},
     {"<S>elect file to inspect", 'S', cxprt},
-    {"<D>etect viruses", 'D', encrypt},
-    {"<F>ix file", 'F', decrypt},
-    {"<Q>uit", 'Q', decrypt},
+    {"<D>etect viruses", 'D', detectViruses},
+    {"<F>ix file", 'F', fixFile},
+    {"<Q>uit", 'Q', Quit},
     {NULL, 0, NULL} // end
 };
 static int BigEndian = 0;
+
+static link *virus_list = NULL;
 
 virus *readVirus(FILE *file)
 // Input: file pointer and returns a virus* that represents the next virus in the file.
@@ -102,6 +104,7 @@ void list_print(link *virus_list, FILE *)
         printVirus(current->vir, stdout);
     }
 }
+
 link *list_append(link *virus_list, virus *data)
 /* Add a new link with the given data to the list (at the end CAN ALSO AT BEGINNING)
 //return a pointer to the list (i.e., the first link in the list). If the list is null - create a new entry and return a pointer to the entry. */
@@ -116,6 +119,7 @@ link *list_append(link *virus_list, virus *data)
     newLink->nextVirus = virus_list;
     return newLink;
 }
+
 void list_free(link *virus_list)
 /* Free the memory allocated by the list. */
 {
@@ -131,15 +135,18 @@ void list_free(link *virus_list)
     }
 }
 
-int main(int argc, char const *argv[])
+void loadSignatures()
 {
-    if (argc > 1)
+    char fileName[256];
+    printf("Please enter signture file \n");
+    if (fgets(fileName, sizeof(fileName), stdin) != NULL)
     {
-        FILE *file = fopen(argv[1], "rb");
+        sscanf(fileName, "%s", fileName);
+        FILE *file = fopen(fileName, "rb");
         if (file == NULL)
         {
-            printf("Error, cannot open the file\n");
-            return 0;
+            printf("Error opening file\n");
+            return; // חוזרים לתפריט הראשי
         }
         char magic[4]; // good file?
         if (fread(magic, 1, 4, file) != 4)
@@ -154,7 +161,6 @@ int main(int argc, char const *argv[])
             {
                 fprintf(stderr, "Invalid file- no magic word \n");
                 fclose(file);
-                return 1;
             }
             else
             {
@@ -169,10 +175,7 @@ int main(int argc, char const *argv[])
                 virus *v = readVirus(file);
                 while (v != NULL)
                 {
-                    printVirus(v, stdout);
-                    free(v->VirusName);
-                    free(v->Sig);
-                    free(v);
+                    virus_list = list_append(virus_list, v);
                     v = readVirus(file);
                 }
             }
@@ -181,13 +184,59 @@ int main(int argc, char const *argv[])
     }
     else
         printf("No file has provided\n");
-    return 0;
+}
+
+void fixFile()
+{
+    printf("Not implemented yet\n");
+}
+
+void Quit(virus *v, FILE *file)
+{
+    printf("Quitting...\n");
+    if (virus_list != NULL)
+    {
+        list_free(virus_list);
+        virus_list = NULL;
+    }
+    fclose(file);
+    exit(0); // exit the program??????????
+}
+
+void detectViruses()
+{
+    printf("Not implemented yet\n");
+}
+int main(int argc, char const *argv[])
+{
+
     while (1)
     {
+        char input;
         printf("Select operation from the following menu:\n");
         for (int i = 0; menu[i].name != NULL; i++) // print menu options
         {
             printf("%c) %s\n", menu[i].index, menu[i].name);
         }
+        printf("Option: ");
+        scanf(" %c", &input);
+
+        int found = 0;
+        for (int i = 0; menu[i].name != NULL; i++)
+        {
+            if (menu[i].index == input)
+            {
+                menu[i].fun(0); // call the function
+                found = 1;
+                break;
+            }
+        }
+        if (!found)
+        {
+            printf("Not within bounds\n");
+            // exit(0)?
+        }
+
+        printf("DONE.\n\n");
     }
 }
