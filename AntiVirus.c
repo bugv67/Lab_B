@@ -152,6 +152,11 @@ void selectFile(void)
 
 void loadSignatures()
 {
+    if (virus_list != NULL)
+    {
+        list_free(virus_list);
+        virus_list = NULL;
+    }
     char fileName[256];
     printf("Please enter signture file \n");
     if (fgets(fileName, sizeof(fileName), stdin) != NULL)
