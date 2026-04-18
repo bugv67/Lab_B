@@ -14,9 +14,15 @@ struct link
     link *nextVirus; // next
     virus *vir;      // data
 };
+struct fun_desc
+{
+    char *name;
+    char index;
+    char (*fun)(char);
+};
 struct fun_desc menu[] = {
     {"<L>oad signatures", 'L', readVirus},
-    {"<P>rint signatures", 'P', dprt},
+    {"<P>rint signatures", 'P', printVirus},
     {"<S>elect file to inspect", 'S', cxprt},
     {"<D>etect viruses", 'D', encrypt},
     {"<F>ix file", 'F', decrypt},
