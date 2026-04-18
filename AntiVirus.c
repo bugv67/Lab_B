@@ -259,8 +259,6 @@ void fixFile()
         }
         current = current->nextVirus;
     }
-
-    printf("Not implemented yet\n");
 }
 
 void Quit()
@@ -350,6 +348,7 @@ struct fun_desc menu[] = {
     {"<Q>uit", 'Q', Quit},
     {NULL, 0, NULL} // end
 };
+
 int main(int argc, char const *argv[])
 {
 

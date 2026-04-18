@@ -9,4 +9,4 @@ hexaPrint:hexaPrint.c
 AntiVirus:AntiVirus.c
 	gcc -m32 -g -Wall -o AntiVirus AntiVirus.c
 clean:
-	rm -f bubbleSort hexaPrint AntiVirus *.o
+	rm -f bubbleSort hexaPrint AntiVirus
