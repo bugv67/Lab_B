@@ -152,6 +152,11 @@ void selectFile(void)
 
 void loadSignatures()
 {
+    if (virus_list != NULL)
+    {
+        list_free(virus_list);
+        virus_list = NULL;
+    }
     char fileName[256];
     printf("Please enter signture file \n");
     if (fgets(fileName, sizeof(fileName), stdin) != NULL)
@@ -168,7 +173,6 @@ void loadSignatures()
         {
             fprintf(stderr, "Error reading magic number\n");
             fclose(file);
-            return 1;
         }
         else
         {
@@ -206,7 +210,7 @@ void fixFile()
     printf("Not implemented yet\n");
 }
 
-void Quit(virus *v, FILE *file)
+void Quit()
 {
     printf("Quitting...\n");
     if (virus_list != NULL)
@@ -214,7 +218,6 @@ void Quit(virus *v, FILE *file)
         list_free(virus_list);
         virus_list = NULL;
     }
-    fclose(file);
     exit(0); // exit the program??????????
 }
 
@@ -238,21 +241,27 @@ int main(int argc, char const *argv[])
 
     while (1)
     {
+        char inputBuffer[256];
         char input;
         printf("Select operation from the following menu:\n");
         for (int i = 0; menu[i].name != NULL; i++) // print menu options
         {
             printf("%c) %s\n", menu[i].index, menu[i].name);
         }
-        printf("Option: ");
-        scanf(" %c", &input);
-
+        if (fgets(inputBuffer, sizeof(inputBuffer), stdin) != NULL)
+        {
+            sscanf(inputBuffer, "%c", &input);
+        }
+        else
+        {
+            break;
+        }
         int found = 0;
         for (int i = 0; menu[i].name != NULL; i++)
         {
             if (menu[i].index == input)
             {
-                menu[i].fun(0); // call the function
+                menu[i].fun(); // call the function
                 found = 1;
                 break;
             }
